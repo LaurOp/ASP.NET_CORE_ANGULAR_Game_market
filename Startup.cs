@@ -13,7 +13,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Proiect.Data;
+using Proiect.Entities;
+using Proiect.Repositories.CreatorRepository;
 using Proiect.Repositories.GameRepository;
+using Proiect.Repositories.GenericRepository;
+using Proiect.Repositories.GenreRepository;
+using Proiect.Repositories.ReviewRepository;
+using Proiect.Repositories.StorylineRepository;
 
 namespace Proiect
 {
@@ -33,6 +39,10 @@ namespace Proiect
             services.AddControllers();
             services.AddDbContext<ProjectContext>(options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Project;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
             services.AddTransient<IGameRepository, GameRepository>();
+            services.AddTransient<ICreatorRepository, CreatorRepository>();
+            services.AddTransient<IGenreRepository, GenreRepository>();
+            services.AddTransient<IReviewRepository, ReviewRepository>();
+            services.AddTransient<IStorylineRepository, StorylineRepository>();
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
