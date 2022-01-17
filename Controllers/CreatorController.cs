@@ -62,6 +62,17 @@ namespace Proiect.Controllers
             return Ok(new CreatorDTO(newcreator));
         }
 
+        [HttpPut("{id}+{number}")]
+        public async Task<IActionResult> UpdateNoEmployees(int id, int number)
+        {
+            var newcreator = await _repository.GetById(id);
+            newcreator.NumberOfEmployees = number;
+
+            _repository.Update(newcreator);
+            await _repository.SaveAsync();
+            return Ok(new CreatorDTO(newcreator));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCreatorById(int id)
         {

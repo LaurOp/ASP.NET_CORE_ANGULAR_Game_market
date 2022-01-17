@@ -79,6 +79,17 @@ namespace Proiect.Controllers
             return Ok(new GenreDTO(newgenre));
         }
 
+        [HttpPut("{id}+{forkids}")]
+        public async Task<IActionResult> UpdateGrade(int id, bool forkids)
+        {
+            var newgenre = await _repository.GetById(id);
+            newgenre.ForKids = forkids;
+
+            _repository.Update(newgenre);
+            await _repository.SaveAsync();
+            return Ok(new GenreDTO(newgenre));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGenreById(int id)
         {

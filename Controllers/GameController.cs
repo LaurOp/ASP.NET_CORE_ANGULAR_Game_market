@@ -65,6 +65,18 @@ namespace Proiect.Controllers
             return Ok(new GameDTO(newgame));
         }
 
+        
+        [HttpPut("{id}+{grade}")]
+        public async Task<IActionResult> UpdateGrade(int id, float grade)
+        {
+            var newgame = await _repository.GetByIdWithAll(id);
+            newgame.Grade = (newgame.Grade + grade) / 2;
+
+            _repository.Update(newgame);
+            await _repository.SaveAsync();
+            return Ok(new GameDTO(newgame));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGameById(int id)
         {

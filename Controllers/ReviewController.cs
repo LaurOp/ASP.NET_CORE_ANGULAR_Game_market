@@ -73,6 +73,28 @@ namespace Proiect.Controllers
             return Ok(new ReviewDTO(newReview));
         }
 
+        [HttpPut("{id}+{likes}")]
+        public async Task<IActionResult> UpdateLikes(int id, int likes)
+        {
+            var newreview = await _repository.GetById(id);
+            newreview.likes = likes;
+
+            _repository.Update(newreview);
+            await _repository.SaveAsync();
+            return Ok(new ReviewDTO(newreview));
+        }
+
+        [HttpPut("{id}-{dislikes}")]
+        public async Task<IActionResult> UpdateGrade(int id, int dislikes)
+        {
+            var newreview = await _repository.GetById(id);
+            newreview.dislikes =dislikes;
+
+            _repository.Update(newreview);
+            await _repository.SaveAsync();
+            return Ok(new ReviewDTO(newreview));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReviewById(int id)
         {

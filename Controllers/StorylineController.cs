@@ -71,6 +71,17 @@ namespace Proiect.Controllers
             return Ok(new StorylineDTO(newStoryline));
         }
 
+        [HttpPut("{id}+{playtime}")]
+        public async Task<IActionResult> UpdatePlaytime(int id, int playtime)
+        {
+            var newstoryline = await _repository.GetById(id);
+            newstoryline.Playtime = playtime;
+
+            _repository.Update(newstoryline);
+            await _repository.SaveAsync();
+            return Ok(new StorylineDTO(newstoryline));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStorylineById(int id)
         {
