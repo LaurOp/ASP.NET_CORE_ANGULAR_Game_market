@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lab2ProjectWeb.Entities;
 using Microsoft.EntityFrameworkCore;
-using Proiect.Data;
 using Proiect.Entities;
 using Proiect.Repositories.GenericRepository;
 

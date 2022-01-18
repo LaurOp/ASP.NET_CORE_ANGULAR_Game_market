@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Project;
 
-namespace Proiect
+namespace Lab2ProjectWeb
 {
     public class Program
     {

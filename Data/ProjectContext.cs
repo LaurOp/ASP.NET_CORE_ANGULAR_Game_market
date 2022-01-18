@@ -1,19 +1,20 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Proiect.Entities;
 
-namespace Proiect.Data
+namespace Lab2ProjectWeb.Entities
 {
-    public class ProjectContext : DbContext
+    public class ProjectContext : IdentityDbContext<User,Role, string, IdentityUserClaim<string>,
+        UserRole,IdentityUserLogin<string>,IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
-        public ProjectContext()
-        {
-        }
-
-        public ProjectContext(DbContextOptions<ProjectContext> options) : base(options) {}
+        
+        public ProjectContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Game> Games { get; set; }
         public DbSet<Creator> Creators { get; set; }
@@ -25,8 +26,8 @@ namespace Proiect.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Game>()
-                .HasOne(g => g.Storyline)
-                .WithOne(s => s.Game);
+            .HasOne(g => g.Storyline)
+            .WithOne(s => s.Game);
 
             modelBuilder.Entity<Creator>()
                 .HasMany(c => c.Games)
@@ -49,7 +50,13 @@ namespace Proiect.Data
                 .WithMany(g => g.GameGenres)
                 .HasForeignKey(gg => gg.GenreId);
 
+            modelBuilder.Entity<UserRole>(ur =>
+            {
+                ur.HasKey(ur => new {ur.UserId, ur.RoleId});
+                ur.HasOne(ur => ur.Role).WithMany(r => r.UserRoles).HasForeignKey(ur => ur.RoleId);
+                ur.HasOne(ur => ur.User).WithMany(u => u.UserRoles).HasForeignKey(ur => ur.UserId);
 
+            });
 
             base.OnModelCreating(modelBuilder);
         }

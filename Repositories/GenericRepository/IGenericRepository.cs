@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Proiect.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,5 @@ namespace Proiect.Repositories.GenericRepository
         void DeleteRange(IEnumerable<TEntity> entities);
 
         Task<bool> SaveAsync();
-
     }
 }

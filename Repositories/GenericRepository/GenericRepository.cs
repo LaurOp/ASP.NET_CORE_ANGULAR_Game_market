@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lab2ProjectWeb.Entities;
 using Microsoft.EntityFrameworkCore;
-using Proiect.Data;
+using Proiect.Entities;
 
 namespace Proiect.Repositories.GenericRepository
 {
@@ -11,6 +12,9 @@ namespace Proiect.Repositories.GenericRepository
     {
         protected readonly ProjectContext _context;
 
+        public GenericRepository()
+        {
+        }
         public GenericRepository(ProjectContext context)
         {
             _context = context;     //dependency injection
