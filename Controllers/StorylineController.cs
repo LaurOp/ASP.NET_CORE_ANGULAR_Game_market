@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Proiect.Entities;
 using Proiect.Entities.DTOs;
 using Proiect.Repositories.GameRepository;
@@ -25,6 +26,7 @@ namespace Proiect.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllStorylines()
         {
             var Storylines = await _repository.GetAllStorylines();
@@ -40,6 +42,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetStorylineById(int id)
         {
             var Storyline = await _repository.GetById(id);
@@ -48,6 +51,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("game{id}")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetStorylineByGameId(int id)
         {
             var Storyline = await _repository.GetByGameId(id);
@@ -56,6 +60,7 @@ namespace Proiect.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateStoryline(CreateStorylineDTO dto)
         {
             Storyline newStoryline = new Storyline();
@@ -72,6 +77,7 @@ namespace Proiect.Controllers
         }
 
         [HttpPut("{id}+{playtime}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> UpdatePlaytime(int id, int playtime)
         {
             var newstoryline = await _repository.GetById(id);
@@ -83,6 +89,7 @@ namespace Proiect.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteStorylineById(int id)
         {
             var Storyline = await _repository.GetById(id);

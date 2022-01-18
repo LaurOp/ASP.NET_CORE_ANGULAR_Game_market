@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Proiect.Entities;
 using Proiect.Entities.DTOs;
 using Proiect.Repositories.GameRepository;
@@ -25,6 +26,7 @@ namespace Proiect.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllGenres()
         {
             var genres = await _repository.GetAllGenres();
@@ -40,6 +42,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetGenreById(int id)
         {
             var genre = await _repository.GetById(id);
@@ -49,6 +52,7 @@ namespace Proiect.Controllers
 
         [Route("kids")]
         [HttpGet]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllGenresForKids()
         {
             var genres = await _repository.GetAllGenresForKids();
@@ -64,6 +68,7 @@ namespace Proiect.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateGenre(CreateGenreDTO dto)
         {
             Genre newgenre = new Genre();
@@ -80,7 +85,8 @@ namespace Proiect.Controllers
         }
 
         [HttpPut("{id}+{forkids}")]
-        public async Task<IActionResult> UpdateGrade(int id, bool forkids)
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> UpdateForkids(int id, bool forkids)
         {
             var newgenre = await _repository.GetById(id);
             newgenre.ForKids = forkids;
@@ -91,6 +97,7 @@ namespace Proiect.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteGenreById(int id)
         {
             var genre = await _repository.GetById(id);

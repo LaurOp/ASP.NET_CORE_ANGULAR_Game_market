@@ -28,7 +28,7 @@ namespace Proiect.Seed
 
             string[] roleNames =
             {
-                "Admin", "User"
+                "Admin", "BasicUser"
             };
 
             IdentityResult roleResult;

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Proiect.Entities;
 using Proiect.Entities.DTOs;
 using Proiect.Repositories.CreatorRepository;
@@ -23,6 +24,7 @@ namespace Proiect.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllCreators()
         {
             var creators = await _repository.GetAllCreators();
@@ -38,6 +40,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetCreatorById(int id)
         {
             var creator = await _repository.GetById(id);
@@ -47,6 +50,7 @@ namespace Proiect.Controllers
 
 
         [HttpPost]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateCreator(CreateCreatorDTO dto)
         {
             Creator newcreator = new Creator();
@@ -63,6 +67,7 @@ namespace Proiect.Controllers
         }
 
         [HttpPut("{id}+{number}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> UpdateNoEmployees(int id, int number)
         {
             var newcreator = await _repository.GetById(id);
@@ -74,6 +79,7 @@ namespace Proiect.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteCreatorById(int id)
         {
             var creator = await _repository.GetById(id);

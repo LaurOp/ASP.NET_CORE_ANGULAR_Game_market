@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Proiect.Entities;
 using Proiect.Entities.DTOs;
 using Proiect.Repositories.GameRepository;
@@ -25,6 +26,7 @@ namespace Proiect.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllReviews()
         {
             var Reviews = await _repository.GetAllReviews();
@@ -40,6 +42,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetReviewById(int id)
         {
             var Review = await _repository.GetById(id);
@@ -48,6 +51,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("author{author}")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetReviewByAuthor(string author)
         {
             var Review = await _repository.GetByAuthor(author);
@@ -56,6 +60,7 @@ namespace Proiect.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateReview(CreateReviewDTO dto)
         {
             Review newReview = new Review();
@@ -73,22 +78,24 @@ namespace Proiect.Controllers
             return Ok(new ReviewDTO(newReview));
         }
 
-        [HttpPut("{id}+{likes}")]
-        public async Task<IActionResult> UpdateLikes(int id, int likes)
+        [HttpPut("{id}+")]
+        [Authorize(Policy = "User")]
+        public async Task<IActionResult> UpdateLikes(int id)
         {
             var newreview = await _repository.GetById(id);
-            newreview.likes = likes;
+            newreview.likes = newreview.likes - 1;
 
             _repository.Update(newreview);
             await _repository.SaveAsync();
             return Ok(new ReviewDTO(newreview));
         }
 
-        [HttpPut("{id}-{dislikes}")]
-        public async Task<IActionResult> UpdateGrade(int id, int dislikes)
+        [HttpPut("{id}-")]
+        [Authorize(Policy = "User")]
+        public async Task<IActionResult> UpdateDislikes(int id)
         {
             var newreview = await _repository.GetById(id);
-            newreview.dislikes =dislikes;
+            newreview.dislikes = newreview.dislikes - 1;
 
             _repository.Update(newreview);
             await _repository.SaveAsync();
@@ -96,6 +103,7 @@ namespace Proiect.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteReviewById(int id)
         {
             var Review = await _repository.GetById(id);

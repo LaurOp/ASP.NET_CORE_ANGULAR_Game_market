@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Proiect.Entities;
 using Proiect.Entities.DTOs;
 using Proiect.Repositories.GameRepository;
@@ -23,6 +24,7 @@ namespace Proiect.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllGames()
         {
             var games = await _repository.GetAllGamesWithCreator();
@@ -38,6 +40,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetGameById(int id)
         {
             var game = await _repository.GetByIdWithAll(id);
@@ -47,6 +50,7 @@ namespace Proiect.Controllers
 
 
         [HttpPost]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateGame(CreateGameDTO dto)
         {
             Game newgame = new Game();
@@ -67,6 +71,8 @@ namespace Proiect.Controllers
 
         
         [HttpPut("{id}+{grade}")]
+        [Authorize(Policy = "User")]
+
         public async Task<IActionResult> UpdateGrade(int id, float grade)
         {
             var newgame = await _repository.GetByIdWithAll(id);
@@ -78,6 +84,7 @@ namespace Proiect.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteGameById(int id)
         {
             var game = await _repository.GetByIdWithAll(id);

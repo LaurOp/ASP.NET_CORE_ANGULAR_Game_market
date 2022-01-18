@@ -105,9 +105,9 @@ namespace Project
 
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("BasicUser", policy => policy.RequireRole("BasicUser").RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
+                opt.AddPolicy("BasicUser", policy => policy.RequireRole("User").RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
                 opt.AddPolicy("Admin", policy => policy.RequireRole("Admin").RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
-
+                opt.AddPolicy("UserOrAdmin", policy => policy.RequireRole("Admin", "User").RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
             });
 
             //Install Microsoft.AspNetCore.Mvc.NewtonsoftJson
