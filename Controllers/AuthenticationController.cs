@@ -12,6 +12,7 @@ namespace Lab2ProjectWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class AuthenticationController : ControllerBase
     {
         private IAuthenticationManager authenticationManager;
