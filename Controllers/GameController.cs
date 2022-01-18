@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Proiect.Entities;
 using Proiect.Entities.DTOs;
+using Proiect.Repositories.CreatorRepository;
 using Proiect.Repositories.GameRepository;
 
 namespace Proiect.Controllers
@@ -16,10 +17,12 @@ namespace Proiect.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameRepository _repository;
+        private readonly ICreatorRepository _creators;
 
-        public GameController(IGameRepository repository)
+        public GameController(IGameRepository repository, ICreatorRepository creators)
         {
             _repository = repository;
+            _creators = creators;
         }
 
 
@@ -49,6 +52,34 @@ namespace Proiect.Controllers
         }
 
 
+        [HttpGet("withCreators")]
+        [Authorize(Policy = "UserOrAdmin")]
+        public async Task<IActionResult> GetAllGamesWithCreatorNames()
+        {
+            var games = await _repository.GetAllGamesWithCreator();
+            var creators = await _creators.GetAllCreators();
+
+            var gamesToReturn = new List<GameDTO>();
+
+            foreach (var game in games)
+            {
+                gamesToReturn.Add(new GameDTO(game));
+            }
+
+
+            var joinResult = games.Join(creators,
+                game => game.CreatorId,
+                creat => creat.Id,
+                (game, creat) => new
+                {
+                    GameName = game.Name,
+                    CreatName = creat.Name
+                });
+
+            return Ok(joinResult);
+        }
+
+
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateGame(CreateGameDTO dto)
@@ -71,7 +102,7 @@ namespace Proiect.Controllers
 
         
         [HttpPut("{id}+{grade}")]
-        [Authorize(Policy = "User")]
+        [Authorize(Policy = "BasicUser")]
 
         public async Task<IActionResult> UpdateGrade(int id, float grade)
         {

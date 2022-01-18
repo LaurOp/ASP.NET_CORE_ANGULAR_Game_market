@@ -59,6 +59,27 @@ namespace Proiect.Controllers
             return Ok(new ReviewDTO(Review));
         }
 
+        [HttpGet("grouped")]
+        [Authorize(Policy = "UserOrAdmin")]
+        public async Task<IActionResult> GetAllReviewGroupedByGame()
+        {
+            var Reviews = await _repository.GetAllReviews();
+
+            var ReviewsToReturn = new List<ReviewDTO>();
+
+            foreach (var Review in Reviews)
+            {
+                ReviewsToReturn.Add(new ReviewDTO(Review));
+            }
+
+            var results = ReviewsToReturn.GroupBy(
+                r => r.GameId,
+                r => r.Text,
+                (key, g) => new { GameIds = key, Texts = g.ToList() });
+
+            return Ok(results);
+        }
+
         [HttpPost]
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateReview(CreateReviewDTO dto)
@@ -69,7 +90,6 @@ namespace Proiect.Controllers
             newReview.likes = dto.likes;
             newReview.dislikes = dto.dislikes;
             newReview.GameId = dto.GameId;
-            newReview.Game = dto.Game;
 
             _repository.Create(newReview); 
 
@@ -79,11 +99,11 @@ namespace Proiect.Controllers
         }
 
         [HttpPut("{id}+")]
-        [Authorize(Policy = "User")]
+        [Authorize(Policy = "BasicUser")]
         public async Task<IActionResult> UpdateLikes(int id)
         {
             var newreview = await _repository.GetById(id);
-            newreview.likes = newreview.likes - 1;
+            newreview.likes = newreview.likes + 1;
 
             _repository.Update(newreview);
             await _repository.SaveAsync();
@@ -91,11 +111,11 @@ namespace Proiect.Controllers
         }
 
         [HttpPut("{id}-")]
-        [Authorize(Policy = "User")]
+        [Authorize(Policy = "BasicUser")]
         public async Task<IActionResult> UpdateDislikes(int id)
         {
             var newreview = await _repository.GetById(id);
-            newreview.dislikes = newreview.dislikes - 1;
+            newreview.dislikes = newreview.dislikes + 1;
 
             _repository.Update(newreview);
             await _repository.SaveAsync();
