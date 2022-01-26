@@ -28,5 +28,6 @@ namespace Proiect.Repositories.GameRepository
         {
             return await _context.Games.Include(g => g.Creator).Include(g => g.Storyline).Where(g => g.Id == id).FirstOrDefaultAsync();
         }
+
     }
 }

@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lab2ProjectWeb.Entities;
 using Lab2ProjectWeb.Managers;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Proiect.Entities.DTOs;
 using Proiect.Repositories.CreatorRepository;
 using Proiect.Repositories.GameRepository;
@@ -39,8 +40,21 @@ namespace Project
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-            services.AddControllers();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "CorsPolicy",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
+
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Project", Version = "v1" });
@@ -124,11 +138,15 @@ namespace Project
             services.AddTransient<IStorylineRepository, StorylineRepository>();
             services.AddScoped<ITokenManager, TokenManager>();
             services.AddScoped<SeedDb>();
+
+            services.AddControllers().AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, SeedDb seed, IWebHostEnvironment env)
         {
+            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -136,10 +154,12 @@ namespace Project
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project v1"));
             }
 
+            
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("CorsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
 

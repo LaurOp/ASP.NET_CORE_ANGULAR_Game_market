@@ -81,7 +81,7 @@ namespace Proiect.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> CreateReview(CreateReviewDTO dto)
         {
             Review newReview = new Review();

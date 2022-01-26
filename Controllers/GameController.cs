@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Proiect.Entities;
 using Proiect.Entities.DTOs;
 using Proiect.Repositories.CreatorRepository;
@@ -53,7 +54,7 @@ namespace Proiect.Controllers
 
 
         [HttpGet("withCreators")]
-        [Authorize(Policy = "UserOrAdmin")]
+        //[Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllGamesWithCreatorNames()
         {
             var games = await _repository.GetAllGamesWithCreator();
@@ -100,7 +101,50 @@ namespace Proiect.Controllers
             return Ok(new GameDTO(newgame));
         }
 
-        
+        public class MyModel2
+        {
+            public string name { get; set; }
+            public string creator { get; set; }
+            public float price { get; set; }
+        }
+
+        public class MyModel3
+        {
+            public string name { get; set; }
+            public string creator { get; set; }
+        }
+
+        [HttpPost("fromBody")]
+        //[Authorize(Policy = "Admin")]
+        public async Task<IActionResult> CreateGame([FromBody]MyModel2 game)        //pentru frontend
+        {
+            Game newgame = new Game();
+            Creator newcreator = new Creator();
+            newgame.Name = game.name;
+            newcreator.Name = game.creator;
+            newgame.Creator = newcreator;
+            newgame.Price = game.price;
+
+            _repository.Create(newgame);    //se executa doar in memorie, trebuie save
+
+            await _repository.SaveAsync();
+
+            var games2 = await _repository.GetAllGamesWithCreator();
+            var creators2 = await _creators.GetAllCreators();
+
+            var joinResult = games2.Join(creators2,
+                game => game.CreatorId,
+                creat => creat.Id,
+                (game, creat) => new
+                {
+                    GameName = game.Name,
+                    CreatName = creat.Name
+                });
+
+            return Ok(joinResult);
+        }
+
+
         [HttpPut("{id}+{grade}")]
         [Authorize(Policy = "BasicUser")]
 
@@ -112,6 +156,34 @@ namespace Proiect.Controllers
             _repository.Update(newgame);
             await _repository.SaveAsync();
             return Ok(new GameDTO(newgame));
+        }
+
+
+        [HttpPut("")]   //endpoint pt frontend
+
+        public async Task<IActionResult> UpdateGame([FromBody]MyModel3 game)
+        {
+            var newgame = await _repository.GetByName(game.name);
+            var newcreator = new Creator();
+            newcreator.Name = game.creator;
+            newgame.Creator = newcreator;
+
+            _repository.Update(newgame);
+            await _repository.SaveAsync();
+
+            var games2 = await _repository.GetAllGamesWithCreator();
+            var creators2 = await _creators.GetAllCreators();
+
+            var joinResult = games2.Join(creators2,
+                game => game.CreatorId,
+                creat => creat.Id,
+                (game, creat) => new
+                {
+                    GameName = game.Name,
+                    CreatName = creat.Name
+                });
+
+            return Ok(joinResult);
         }
 
         [HttpDelete("{id}")]
@@ -127,6 +199,39 @@ namespace Proiect.Controllers
             await _repository.SaveAsync();
 
             return NoContent();
+        }
+
+        public class MyModel
+        {
+            public string name { get; set; }
+        }
+
+        [HttpDelete("")]
+        //[Authorize(Policy = "Admin")]
+        public async Task<IActionResult> DeleteGameByName([FromBody]MyModel name)
+        {
+            var game = await _repository.GetByName(name.name);
+            
+            if (game == null)
+            {
+                return NotFound("Game does not exist");
+            }
+            _repository.Delete(game);
+            await _repository.SaveAsync();
+
+            var games2 = await _repository.GetAllGamesWithCreator();
+            var creators2 = await _creators.GetAllCreators();
+
+            var joinResult = games2.Join(creators2,
+                game => game.CreatorId,
+                creat => creat.Id,
+                (game, creat) => new
+                {
+                    GameName = game.Name,
+                    CreatName = creat.Name
+                });
+
+            return Ok(joinResult);
         }
     }
 }
