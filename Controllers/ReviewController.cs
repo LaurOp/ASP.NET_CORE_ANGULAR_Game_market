@@ -119,6 +119,29 @@ namespace Proiect.Controllers
             return Ok(new ReviewDTO(newReview));
         }
 
+
+        public class MyModel4
+        {
+            public string text { get; set; }
+            public int id { get; set; }
+            
+        }
+        [HttpPost("fromBody")]
+        public async Task<IActionResult> CreateReview([FromBody]MyModel4 dto)
+        {
+            Review newReview = new Review();
+            newReview.GameId = dto.id;
+            newReview.Text = dto.text;
+            newReview.likes = 0;
+            newReview.dislikes = 0;
+
+            _repository.Create(newReview);
+
+            await _repository.SaveAsync();
+
+            return Ok(newReview);
+        }
+
         [HttpPut("{id}+")]
         [Authorize(Policy = "BasicUser")]
         public async Task<IActionResult> UpdateLikes(int id)
