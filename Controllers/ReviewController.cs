@@ -60,7 +60,7 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("grouped")]
-        [Authorize(Policy = "UserOrAdmin")]
+        //[Authorize(Policy = "UserOrAdmin")]
         public async Task<IActionResult> GetAllReviewGroupedByGame()
         {
             var Reviews = await _repository.GetAllReviews();
@@ -78,6 +78,27 @@ namespace Proiect.Controllers
                 (key, g) => new { GameIds = key, Texts = g.ToList() });
 
             return Ok(results);
+        }
+
+        [HttpGet("grouped/{id}")]
+        //[Authorize(Policy = "UserOrAdmin")]
+        public async Task<IActionResult> GetAllReviewsOfGame(int id)
+        {
+            var Reviews = await _repository.GetAllReviews();
+
+            var ReviewsToReturn = new List<ReviewDTO>();
+
+            foreach (var Review in Reviews)
+            {
+                ReviewsToReturn.Add(new ReviewDTO(Review));
+            }
+
+            var results = ReviewsToReturn.GroupBy(
+                r => r.GameId,
+                r => r.Text,
+                (key, g) => new { GameIds = key, Texts = g.ToList() });
+
+            return Ok(results.FirstOrDefault(g => g.GameIds.Equals(id)));
         }
 
         [HttpPost]

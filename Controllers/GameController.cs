@@ -52,6 +52,14 @@ namespace Proiect.Controllers
             return Ok(new GameDTO(game));
         }
 
+        [HttpGet("+{name}")]
+        public async Task<IActionResult> GetGameByName(string name)
+        {
+            var game = await _repository.GetByName(name);
+
+            return Ok(new GameDTO(game));
+        }
+
 
         [HttpGet("withCreators")]
         //[Authorize(Policy = "UserOrAdmin")]
